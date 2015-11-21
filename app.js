@@ -1,45 +1,48 @@
-// 1. We need a namespace for our app
+// 1. Create nampspace for app
 var artApp = {};
 
-// 1.5 Store our API key in a variable - also store end point in a variable
+// 2. Store API key and endpoint in variables
 artApp.key = 'GMv5Je5N';
 artApp.endpoint = 'https://www.rijksmuseum.nl/api/en/collection/';
 
-// 2. We need a function to fetch the art results
+// 2. Make function to fetch the art results
 artApp.getArt = function(searchTerm) {
   $.ajax({
     url : artApp.endpoint,
-    dataType : 'jsonp', // we tell jQuery to expect jsonp
+    dataType : 'jsonp', // tell jQuery to expect jsonp
     type : 'GET',
-    // The data property specifies the parameters that come along for the ride
+    
+    // (the data property specifies the parameters that come along for the ride)
     data : {
       key : artApp.key,
-      format : 'jsonp', //we ask the API for jsonp
+      format : 'jsonp', //ask the API for JSONP
       q : searchTerm,
-      imgonly : true // this works most of the time
+      imgonly : true // this works sometimes, but there's a prob with the API - see failsafe below
     },
-    success : function(response) {
+    success : function(response) { //pass the 'success function' a parameter, then use to call below 
       console.log("Got the data, going to send it to displayArt");
       artApp.displayArt(response.artObjects);
     } 
   });
 }
 
-// 3. We need a function to display the results 
+// 3. Make a function to display the results 
 artApp.displayArt = function(pieces) {
-  console.log("We made it to the display art function! :)");
+  console.log("Hurray, we've made it to the display art function!");
   console.log(pieces);
-  // Clear out anything that was there from a previous search
+  
+  // Clear results each time a new search is performed
   $('#artwork').html('');
-  // We need to loop over pieces, and create the HTML for each one of them
+  
+  // Loop over pieces, and create HTML for each one of them
   pieces.forEach(function(piece) {
     
-    //check if it doesn't have an image
+    // Failsafe for image check
     if(!piece.webImage) {
-      return; //skip JUST this one piece
-    }
+      return;
+      } 
 
-    // Create the HTML for the piece (using the fancy ES6 method of 'template strings')
+    // Create the HTML for the piece (using the ES6 method of 'template strings')
     var pieceHTML = `
     <div class="piece">
       <img src="${piece.webImage.url}" alt="${piece.title}">
@@ -58,8 +61,8 @@ artApp.displayArt = function(pieces) {
 
 } //end displayArt()
 
-// For you
-// 1. Create a search box (form with input and submit button) that will allow users to search for whatever they want - simiar to to-do app and grocery getter
+
+// 4. Create a search box (form with input and submit button) that will allow users to search for whatever they want
 
 artApp.init = function(){
   $('form').on('submit', function(e){
@@ -73,4 +76,4 @@ $(document).ready(function(){
   artApp.init();
 });
 
-// 2. When done that - implement TWO additional options from the docs (such as: a dropdown for 'material', or the 'maker', or filter for hexcode with HTML5 colour picker, slider to limit number of shown, checkbox for only showing top pieces.)
+// *** implement TWO additional options from the docs (such as: a dropdown for 'material', or the 'maker', or filter for hexcode with HTML5 colour picker, slider to limit number of shown, checkbox for only showing top pieces.)
